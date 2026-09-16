@@ -1,0 +1,16 @@
+[Script Info]
+Title: Nuvio libmpv ASS move 24fps test
+ScriptType: v4.00+
+PlayResX: 1280
+PlayResY: 720
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,DejaVu Sans,44,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,0,0,0,0,100,100,0,0,1,2,0,5,20,20,20,1
+Style: Label,DejaVu Sans,28,&H00B0B0B0,&H00B0B0B0,&H00000000,&H80000000,0,0,0,0,100,100,0,0,1,1,0,7,20,20,20,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:12.00,Label,,0,0,0,,24 fps video / embedded ASS / libass \\move test
+Dialogue: 0,0:00:01.00,0:00:11.00,Default,,0,0,0,,{\\an5\\move(1450,360,-350,360)}ASS move animation refresh test

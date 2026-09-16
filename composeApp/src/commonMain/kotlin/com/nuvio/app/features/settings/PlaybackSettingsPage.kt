@@ -109,6 +109,7 @@ internal fun LazyListScope.playbackSettingsContent(
     androidLibmpvVideoOutput: AndroidLibmpvVideoOutput,
     androidLibmpvHardwareDecodingEnabled: Boolean,
     androidLibmpvYuv420pEnabled: Boolean,
+    androidLibmpvSmoothAssMotionEnabled: Boolean,
     decoderPriority: Int,
     mapDV7ToHevc: Boolean,
     tunnelingEnabled: Boolean,
@@ -132,6 +133,7 @@ internal fun LazyListScope.playbackSettingsContent(
             androidLibmpvVideoOutput = androidLibmpvVideoOutput,
             androidLibmpvHardwareDecodingEnabled = androidLibmpvHardwareDecodingEnabled,
             androidLibmpvYuv420pEnabled = androidLibmpvYuv420pEnabled,
+            androidLibmpvSmoothAssMotionEnabled = androidLibmpvSmoothAssMotionEnabled,
             decoderPriority = decoderPriority,
             mapDV7ToHevc = mapDV7ToHevc,
             tunnelingEnabled = tunnelingEnabled,
@@ -285,6 +287,7 @@ private fun PlaybackSettingsSection(
     androidLibmpvVideoOutput: AndroidLibmpvVideoOutput,
     androidLibmpvHardwareDecodingEnabled: Boolean,
     androidLibmpvYuv420pEnabled: Boolean,
+    androidLibmpvSmoothAssMotionEnabled: Boolean,
     decoderPriority: Int,
     mapDV7ToHevc: Boolean,
     tunnelingEnabled: Boolean,
@@ -932,6 +935,15 @@ private fun PlaybackSettingsSection(
                             enabled = libmpvOptionsEnabled,
                             isTablet = isTablet,
                             onCheckedChange = PlayerSettingsRepository::setAndroidLibmpvYuv420pEnabled,
+                        )
+                        SettingsGroupDivider(isTablet = isTablet)
+                        SettingsSwitchRow(
+                            title = stringResource(Res.string.settings_playback_libmpv_smooth_ass_motion),
+                            description = stringResource(Res.string.settings_playback_libmpv_smooth_ass_motion_description),
+                            checked = androidLibmpvSmoothAssMotionEnabled,
+                            enabled = libmpvOptionsEnabled,
+                            isTablet = isTablet,
+                            onCheckedChange = PlayerSettingsRepository::setAndroidLibmpvSmoothAssMotionEnabled,
                         )
                     }
                     SettingsGroupDivider(isTablet = isTablet)
