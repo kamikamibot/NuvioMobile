@@ -50,6 +50,7 @@ actual object PlayerSettingsStorage {
     private const val androidLibmpvVideoOutputKey = "android_libmpv_video_output"
     private const val androidLibmpvHardwareDecodingEnabledKey = "android_libmpv_hardware_decoding_enabled"
     private const val androidLibmpvYuv420pEnabledKey = "android_libmpv_yuv420p_enabled"
+    private const val androidLibmpvSmoothAssMotionEnabledKey = "android_libmpv_smooth_ass_motion_enabled"
     private const val decoderPriorityKey = "decoder_priority"
     private const val mapDV7ToHevcKey = "map_dv7_to_hevc"
     private const val tunnelingEnabledKey = "tunneling_enabled"
@@ -125,6 +126,7 @@ actual object PlayerSettingsStorage {
         androidLibmpvVideoOutputKey,
         androidLibmpvHardwareDecodingEnabledKey,
         androidLibmpvYuv420pEnabledKey,
+        androidLibmpvSmoothAssMotionEnabledKey,
         decoderPriorityKey,
         mapDV7ToHevcKey,
         tunnelingEnabledKey,
@@ -558,6 +560,23 @@ actual object PlayerSettingsStorage {
 
     actual fun saveAndroidLibmpvYuv420pEnabled(enabled: Boolean) {
         NSUserDefaults.standardUserDefaults.setBool(enabled, forKey = ProfileScopedKey.of(androidLibmpvYuv420pEnabledKey))
+    }
+
+    actual fun loadAndroidLibmpvSmoothAssMotionEnabled(): Boolean? {
+        val defaults = NSUserDefaults.standardUserDefaults
+        val key = ProfileScopedKey.of(androidLibmpvSmoothAssMotionEnabledKey)
+        return if (defaults.objectForKey(key) != null) {
+            defaults.boolForKey(key)
+        } else {
+            null
+        }
+    }
+
+    actual fun saveAndroidLibmpvSmoothAssMotionEnabled(enabled: Boolean) {
+        NSUserDefaults.standardUserDefaults.setBool(
+            enabled,
+            forKey = ProfileScopedKey.of(androidLibmpvSmoothAssMotionEnabledKey),
+        )
     }
 
     actual fun loadDecoderPriority(): Int? {
@@ -1003,6 +1022,9 @@ actual object PlayerSettingsStorage {
             put(androidLibmpvHardwareDecodingEnabledKey, encodeSyncBoolean(it))
         }
         loadAndroidLibmpvYuv420pEnabled()?.let { put(androidLibmpvYuv420pEnabledKey, encodeSyncBoolean(it)) }
+        loadAndroidLibmpvSmoothAssMotionEnabled()?.let {
+            put(androidLibmpvSmoothAssMotionEnabledKey, encodeSyncBoolean(it))
+        }
         loadDecoderPriority()?.let { put(decoderPriorityKey, encodeSyncInt(it)) }
         loadMapDV7ToHevc()?.let { put(mapDV7ToHevcKey, encodeSyncBoolean(it)) }
         loadTunnelingEnabled()?.let { put(tunnelingEnabledKey, encodeSyncBoolean(it)) }
@@ -1082,6 +1104,8 @@ actual object PlayerSettingsStorage {
         payload.decodeSyncBoolean(androidLibmpvHardwareDecodingEnabledKey)
             ?.let(::saveAndroidLibmpvHardwareDecodingEnabled)
         payload.decodeSyncBoolean(androidLibmpvYuv420pEnabledKey)?.let(::saveAndroidLibmpvYuv420pEnabled)
+        payload.decodeSyncBoolean(androidLibmpvSmoothAssMotionEnabledKey)
+            ?.let(::saveAndroidLibmpvSmoothAssMotionEnabled)
         payload.decodeSyncInt(decoderPriorityKey)?.let(::saveDecoderPriority)
         payload.decodeSyncBoolean(mapDV7ToHevcKey)?.let(::saveMapDV7ToHevc)
         payload.decodeSyncBoolean(tunnelingEnabledKey)?.let(::saveTunnelingEnabled)

@@ -5,5 +5,15 @@
             android:name="com.nuvio.android.BackgroundDownloadTestActivity"
             android:exported="true"
             android:theme="@style/Theme.Nuvio" />
+        <activity
+            android:name="com.nuvio.app.features.player.DebugAssMoveTestActivity"
+            android:exported="true"
+            android:label="ASS Move Test"
+            android:theme="@style/Theme.Nuvio">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>

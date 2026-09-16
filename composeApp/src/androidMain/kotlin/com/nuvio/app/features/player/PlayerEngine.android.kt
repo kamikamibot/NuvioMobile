@@ -12,6 +12,7 @@ import android.graphics.Typeface
 import android.os.Build
 import android.os.SystemClock
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.WindowManager
 import android.util.AttributeSet
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -180,6 +181,7 @@ actual fun PlatformPlayerSurface(
                 videoOutput = playerSettings.androidLibmpvVideoOutput,
                 hardwareDecodingEnabled = playerSettings.androidLibmpvHardwareDecodingEnabled,
                 yuv420pEnabled = playerSettings.androidLibmpvYuv420pEnabled,
+                smoothAssMotionEnabled = playerSettings.androidLibmpvSmoothAssMotionEnabled,
                 onControllerReady = onControllerReady,
                 onSnapshot = onSnapshot,
                 onError = onError,
@@ -976,6 +978,7 @@ private fun LibmpvPlayerSurface(
     videoOutput: AndroidLibmpvVideoOutput,
     hardwareDecodingEnabled: Boolean,
     yuv420pEnabled: Boolean,
+    smoothAssMotionEnabled: Boolean,
     onControllerReady: (PlayerEngineController) -> Unit,
     onSnapshot: (PlayerPlaybackSnapshot) -> Unit,
     onError: (String?) -> Unit,
@@ -1228,6 +1231,7 @@ private fun LibmpvPlayerSurface(
                 videoOutput = if (isLocalFileSource) AndroidLibmpvVideoOutput.Gpu else videoOutput,
                 hardwareDecodingEnabled = if (isLocalFileSource) false else hardwareDecodingEnabled,
                 yuv420pEnabled = yuv420pEnabled,
+                smoothAssMotionEnabled = smoothAssMotionEnabled,
             ).apply {
                 layoutParams = android.view.ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
                 keepScreenOn = false
@@ -1259,11 +1263,25 @@ private tailrec fun Context.findActivity(): Activity? =
         else -> null
     }
 
+private fun Context.currentDisplayRefreshRateHz(): Float {
+    val refreshRate = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        findActivity()?.display?.refreshRate ?: display?.refreshRate
+    } else {
+        @Suppress("DEPRECATION")
+        (findActivity()?.windowManager
+            ?: getSystemService(Context.WINDOW_SERVICE) as? WindowManager)
+            ?.defaultDisplay
+            ?.refreshRate
+    }
+    return refreshRate?.takeIf { it.isFinite() && it in 30f..240f } ?: 60f
+}
+
 private class NuvioLibmpvView(
     context: Context,
     private val videoOutput: AndroidLibmpvVideoOutput,
     private val hardwareDecodingEnabled: Boolean,
     private val yuv420pEnabled: Boolean,
+    private val smoothAssMotionEnabled: Boolean,
     attrs: AttributeSet? = null,
 ) : BaseMPVView(context, attrs) {
     private val mpvDispatcher = Executors.newSingleThreadExecutor { runnable ->
@@ -1286,8 +1304,16 @@ private class NuvioLibmpvView(
         setVo(videoOutput.mpvValue)
         mpv.setOptionString("profile", "fast")
         mpv.setOptionString("hwdec", if (hardwareDecodingEnabled) "auto" else "no")
-        if (yuv420pEnabled) {
-            mpv.setOptionString("vf", "format=yuv420p")
+        val filters = buildList {
+            if (smoothAssMotionEnabled) {
+                add("fps=${context.currentDisplayRefreshRateHz()}")
+            }
+            if (yuv420pEnabled) {
+                add("format=yuv420p")
+            }
+        }
+        if (filters.isNotEmpty()) {
+            mpv.setOptionString("vf", filters.joinToString(",")).logIfMpvError("vf")
         }
         mpv.setOptionString("msg-level", "all=warn")
         mpv.setOptionString("tls-verify", "yes")

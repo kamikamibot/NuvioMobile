@@ -56,6 +56,7 @@ data class PlayerSettingsUiState(
     val androidLibmpvVideoOutput: AndroidLibmpvVideoOutput = AndroidLibmpvVideoOutput.GpuNext,
     val androidLibmpvHardwareDecodingEnabled: Boolean = true,
     val androidLibmpvYuv420pEnabled: Boolean = false,
+    val androidLibmpvSmoothAssMotionEnabled: Boolean = false,
     val decoderPriority: Int = 1,
     val mapDV7ToHevc: Boolean = false,
     val tunnelingEnabled: Boolean = false,
@@ -125,6 +126,7 @@ object PlayerSettingsRepository {
     private var androidLibmpvVideoOutput = AndroidLibmpvVideoOutput.GpuNext
     private var androidLibmpvHardwareDecodingEnabled = true
     private var androidLibmpvYuv420pEnabled = false
+    private var androidLibmpvSmoothAssMotionEnabled = false
     private var decoderPriority = 1
     private var mapDV7ToHevc = false
     private var tunnelingEnabled = false
@@ -199,6 +201,7 @@ object PlayerSettingsRepository {
         androidLibmpvVideoOutput = AndroidLibmpvVideoOutput.GpuNext
         androidLibmpvHardwareDecodingEnabled = true
         androidLibmpvYuv420pEnabled = false
+        androidLibmpvSmoothAssMotionEnabled = false
         decoderPriority = 1
         mapDV7ToHevc = false
         tunnelingEnabled = false
@@ -302,6 +305,8 @@ object PlayerSettingsRepository {
             ?: AndroidLibmpvVideoOutput.GpuNext
         androidLibmpvHardwareDecodingEnabled = PlayerSettingsStorage.loadAndroidLibmpvHardwareDecodingEnabled() ?: true
         androidLibmpvYuv420pEnabled = PlayerSettingsStorage.loadAndroidLibmpvYuv420pEnabled() ?: false
+        androidLibmpvSmoothAssMotionEnabled =
+            PlayerSettingsStorage.loadAndroidLibmpvSmoothAssMotionEnabled() ?: false
         decoderPriority = PlayerSettingsStorage.loadDecoderPriority() ?: 1
         mapDV7ToHevc = PlayerSettingsStorage.loadMapDV7ToHevc() ?: false
         tunnelingEnabled = PlayerSettingsStorage.loadTunnelingEnabled() ?: false
@@ -589,6 +594,14 @@ object PlayerSettingsRepository {
         androidLibmpvYuv420pEnabled = enabled
         publish()
         PlayerSettingsStorage.saveAndroidLibmpvYuv420pEnabled(enabled)
+    }
+
+    fun setAndroidLibmpvSmoothAssMotionEnabled(enabled: Boolean) {
+        ensureLoaded()
+        if (androidLibmpvSmoothAssMotionEnabled == enabled) return
+        androidLibmpvSmoothAssMotionEnabled = enabled
+        publish()
+        PlayerSettingsStorage.saveAndroidLibmpvSmoothAssMotionEnabled(enabled)
     }
 
     fun setDecoderPriority(priority: Int) {
@@ -976,6 +989,7 @@ object PlayerSettingsRepository {
             androidLibmpvVideoOutput = androidLibmpvVideoOutput,
             androidLibmpvHardwareDecodingEnabled = androidLibmpvHardwareDecodingEnabled,
             androidLibmpvYuv420pEnabled = androidLibmpvYuv420pEnabled,
+            androidLibmpvSmoothAssMotionEnabled = androidLibmpvSmoothAssMotionEnabled,
             decoderPriority = decoderPriority,
             mapDV7ToHevc = mapDV7ToHevc,
             tunnelingEnabled = tunnelingEnabled,
